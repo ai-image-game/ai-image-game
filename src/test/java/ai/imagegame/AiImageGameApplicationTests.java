@@ -23,9 +23,10 @@ class AiImageGameApplicationTests {
 		List<ImageInfoV1> imageInfoV1List = imageRepositoryV1.findAll();
 		imageInfoV1List.forEach(imageInfo -> {
 			String key = String.join("_", IMAGE_KEY_PREFIX, String.valueOf(imageInfo.getLevel()));
-			this.hashOperations.put(key, String.valueOf(imageInfo.getId()), imageInfo);
+			this.hashOperations.put(key, String.valueOf(imageInfo.getUuid()), imageInfo);
 		});
-		System.out.println("#### " +this.hashOperations.randomEntry(String.join("_", IMAGE_KEY_PREFIX, "1")));
+		String uuid = imageInfoV1List.get(0).getUuid();
+		System.out.println("#### " +this.hashOperations.randomEntry(String.join("_", IMAGE_KEY_PREFIX, uuid)));
 	}
 
 }

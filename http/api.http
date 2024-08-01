@@ -11,12 +11,22 @@ Content-Type: application/json
  "level" : 1
 }
 
+### get level info
+PUT http://localhost/api/v1/level
+Accept: application/json
+Content-Type: application/json
+
+{
+  "level" : 3,
+  "questions": 0
+}
+
 ### guess
 POST http://localhost/api/v1/guess
 Accept: application/json
 Content-Type: application/json
 
 {
-  "imageId" : 1,
-  "currentGuess": "N"
+  "imageInfo" : {"imageId" : "61f38e47-4e7e-11ef-857a-00155d40afad"},
+  "guessInfo" :{"currentGuess": "n", "inputLetters" : []}
 }

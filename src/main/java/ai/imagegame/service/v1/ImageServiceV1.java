@@ -5,6 +5,7 @@ import ai.imagegame.dto.v1.RedisKeyV1;
 import ai.imagegame.repository.v1.ImageInfoV1;
 import ai.imagegame.repository.v1.ImageRepositoryV1;
 import jakarta.annotation.Resource;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.stereotype.Service;
@@ -17,18 +18,26 @@ import java.util.stream.IntStream;
 public class ImageServiceV1 {
     @Resource(name = "redisTemplate")
     private HashOperations<String, String, RedisImageInfoV1> hashOperationsV1;
-    private Map<Long, String> answerCacheMap = new HashMap<>();
+    private Map<String, String> answerCacheMap = new HashMap<>();
     private final ImageRepositoryV1 imageRepositoryV1;
+    private Set<Character> specialCharacters = new HashSet<>();
+    @Getter private int maxLevel = 0;
 
     public void init() {
-        List<ImageInfoV1> imageInfoV1List = imageRepositoryV1.findAll();
+        List<ImageInfoV1> imageInfoV1List = this.imageRepositoryV1.findAll();
         imageInfoV1List.forEach(imageInfo -> {
-            RedisImageInfoV1 redisImageInfo = new RedisImageInfoV1(imageInfo);
-            String key = String.join("_", RedisKeyV1.IMAGE, String.valueOf(redisImageInfo.getLevel()));
-            String hashKey = String.valueOf(redisImageInfo.getId());
-            this.hashOperationsV1.putIfAbsent(key, hashKey, redisImageInfo);
-            this.answerCacheMap.put(imageInfo.getId(), imageInfo.getAnswer());
+            insertImageToRedis(imageInfo);
+            this.answerCacheMap.put(imageInfo.getUuid(), imageInfo.getAnswer());
         });
+        this.maxLevel = this.imageRepositoryV1.findMaxLevel();
+        this.specialCharacters.addAll(List.of(' ', '\''));
+    }
+
+    private void insertImageToRedis (ImageInfoV1 imageInfo) {
+        RedisImageInfoV1 redisImageInfo = new RedisImageInfoV1(imageInfo);
+        String key = String.join("_", RedisKeyV1.IMAGE, String.valueOf(redisImageInfo.getLevel()));
+        String hashKey = String.valueOf(redisImageInfo.getId());
+        this.hashOperationsV1.putIfAbsent(key, hashKey, redisImageInfo);
     }
 
     public RedisImageInfoV1 randomImage(int level) {
@@ -39,8 +48,8 @@ public class ImageServiceV1 {
         return imagInfoEntry.getValue();
     }
 
-    public String getAnswer(long id) {
-        return this.answerCacheMap.get(id).toUpperCase();
+    public String getAnswer(String id) {
+        return this.answerCacheMap.get(id).toLowerCase();
     }
 
     public List<Integer> getAnswerIndexList(String answer, char guess) {
@@ -52,10 +61,16 @@ public class ImageServiceV1 {
     }
 
     public boolean isCorrectAnswer(String answer, char guess, Set<Character> inputLetters) {
-        for (char c : inputLetters) {
-            answer = answer.replaceAll(String.valueOf(c), "");
+        char[] answerLetters = answer.toCharArray();
+        Set<Character> answerSet = new HashSet<>();
+        for (char c : answerLetters) {
+            answerSet.add(c);
         }
-        answer = answer.replaceAll(String.valueOf(guess), "");
-        return answer.isEmpty();
+
+        answerSet.removeAll(specialCharacters);
+        answerSet.removeAll(inputLetters);
+        answerSet.remove(guess);
+        return answerSet.isEmpty();
     }
+
 }

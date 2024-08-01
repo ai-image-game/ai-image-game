@@ -18,6 +18,7 @@ public class ImageInfoV1 extends ImageInfo {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
+    private String uuid;
     @Column(nullable = false, length = 300) private String pcImage;
     @Column(nullable = false, length = 300) private String mobileImage;
     @Column(nullable = false) private int level;
