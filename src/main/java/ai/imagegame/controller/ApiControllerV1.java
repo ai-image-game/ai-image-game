@@ -1,7 +1,7 @@
 package ai.imagegame.controller;
 
 import ai.imagegame.domain.LevelStatus;
-import ai.imagegame.domain.RedisGameData;
+import ai.imagegame.repository.v1.RedisGameDataV1;
 import ai.imagegame.dto.v1.*;
 import ai.imagegame.exception.BadRequestException;
 import ai.imagegame.service.v1.ImageService;
@@ -23,7 +23,7 @@ public class ApiControllerV1 {
         if (!request.getGuessInfo().getInputLetters().isEmpty() || request.getGuessInfo().getCurrentGuess() != 0) {
             throw new BadRequestException();
         }
-        RedisGameData redisGameData = imageService.randomImage(request.getGameInfo().getLevel());
+        RedisGameDataV1 redisGameData = imageService.randomImage(request.getGameInfo().getLevel());
         return new ImageGameResponseDtoV1(request.getGameInfo(), redisGameData);
     }
 
@@ -38,7 +38,7 @@ public class ApiControllerV1 {
 
     @PutMapping("image")
     public ImageInfoDtoV1 imageInfoV1(@RequestBody GameInfoDtoV1 gameInfoDtoV1) {
-        RedisGameData redisGameData = imageService.randomImage(gameInfoDtoV1.getLevel());
+        RedisGameDataV1 redisGameData = imageService.randomImage(gameInfoDtoV1.getLevel());
         return new ImageInfoDtoV1(redisGameData.getImageInfo());
     }
 

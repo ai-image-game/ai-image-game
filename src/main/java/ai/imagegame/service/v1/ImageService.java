@@ -1,8 +1,8 @@
 package ai.imagegame.service.v1;
 
-import ai.imagegame.domain.RedisGameData;
+import ai.imagegame.repository.v1.RedisGameDataV1;
 import ai.imagegame.dto.v1.RedisKeyV1;
-import ai.imagegame.repository.v1.GameDataEntity;
+import ai.imagegame.repository.v1.GameDataEntityV1;
 import ai.imagegame.repository.v1.GameDataEntityRepositoryV1;
 import jakarta.annotation.Resource;
 import lombok.Getter;
@@ -17,14 +17,14 @@ import java.util.stream.IntStream;
 @RequiredArgsConstructor
 public class ImageService {
     @Resource(name = "redisTemplate")
-    private HashOperations<String, String, RedisGameData> hashOperationsV1;
+    private HashOperations<String, String, RedisGameDataV1> hashOperationsV1;
     private Map<String, String> answerCacheMap = new HashMap<>();
     private final GameDataEntityRepositoryV1 gameDataEntityRepositoryV1;
     private Set<Character> specialCharacters = new HashSet<>();
     @Getter private int maxLevel = 0;
 
     public void init() {
-        List<GameDataEntity> gameDataEntityV1List = this.gameDataEntityRepositoryV1.findAll();
+        List<GameDataEntityV1> gameDataEntityV1List = this.gameDataEntityRepositoryV1.findAll();
         gameDataEntityV1List.forEach(gameDataEntity -> {
             insertGameDataToRedis(gameDataEntity);
             this.answerCacheMap.put(gameDataEntity.getUuid(), gameDataEntity.getAnswer());
@@ -33,15 +33,15 @@ public class ImageService {
         this.specialCharacters.addAll(List.of(' '));
     }
 
-    private void insertGameDataToRedis(GameDataEntity gameDataEntity) {
-        RedisGameData redisImageInfo = new RedisGameData(gameDataEntity);
+    private void insertGameDataToRedis(GameDataEntityV1 gameDataEntity) {
+        RedisGameDataV1 redisImageInfo = new RedisGameDataV1(gameDataEntity);
         String key = String.join("_", RedisKeyV1.GAME, String.valueOf(redisImageInfo.getLevel()));
         String hashKey = String.valueOf(redisImageInfo.getImageInfo().getUuid());
         this.hashOperationsV1.put(key, hashKey, redisImageInfo);
     }
 
-    public RedisGameData randomImage(int level) {
-        Map.Entry<String, RedisGameData> imagInfoEntry = this.hashOperationsV1.randomEntry(RedisKeyV1.levelImage(level));
+    public RedisGameDataV1 randomImage(int level) {
+        Map.Entry<String, RedisGameDataV1> imagInfoEntry = this.hashOperationsV1.randomEntry(RedisKeyV1.levelImage(level));
         if (imagInfoEntry == null || imagInfoEntry.getKey() == null) {
             throw new RuntimeException("Not found image info.");
         }

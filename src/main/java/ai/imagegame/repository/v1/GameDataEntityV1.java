@@ -13,7 +13,7 @@ import java.time.ZonedDateTime;
 @Getter @Setter
 @NoArgsConstructor
 @Table(name = "game_data")
-public class GameDataEntity {
+public class GameDataEntityV1 {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;

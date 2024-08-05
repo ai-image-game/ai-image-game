@@ -1,6 +1,7 @@
-package ai.imagegame.domain;
+package ai.imagegame.repository.v1;
 
-import ai.imagegame.repository.v1.GameDataEntity;
+import ai.imagegame.domain.ImageInfo;
+import ai.imagegame.domain.QuestionInfo;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -8,12 +9,12 @@ import java.io.Serializable;
 
 @Data
 @NoArgsConstructor
-public class RedisGameData implements Serializable {
+public class RedisGameDataV1 implements Serializable {
     private int level;
     private ImageInfo imageInfo = new ImageInfo();
     private QuestionInfo questionInfo = new QuestionInfo();
 
-    public RedisGameData(GameDataEntity gameDataEntity) {
+    public RedisGameDataV1(GameDataEntityV1 gameDataEntity) {
         this.level = gameDataEntity.getLevel();
 
         this.imageInfo.setId(gameDataEntity.getId());
