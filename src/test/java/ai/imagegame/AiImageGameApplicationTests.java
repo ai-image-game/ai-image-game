@@ -1,7 +1,8 @@
 package ai.imagegame;
 
-import ai.imagegame.repository.v1.ImageInfoV1;
-import ai.imagegame.repository.v1.ImageRepositoryV1;
+import ai.imagegame.domain.RedisGameData;
+import ai.imagegame.repository.v1.GameDataEntity;
+import ai.imagegame.repository.v1.GameDataEntityRepositoryV1;
 import jakarta.annotation.Resource;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,19 +14,19 @@ import java.util.List;
 @SpringBootTest
 class AiImageGameApplicationTests {
 	@Autowired
-	private ImageRepositoryV1 imageRepositoryV1;
+	private GameDataEntityRepositoryV1 gameDataEntityRepositoryV1;
 	@Resource(name = "redisTemplate")
-	private HashOperations<String, String, ImageInfoV1> hashOperations;
+	private HashOperations<String, String, RedisGameData> hashOperations;
 	private final static String IMAGE_KEY_PREFIX = "image";
 
 	@Test
 	void contextLoads() {
-		List<ImageInfoV1> imageInfoV1List = imageRepositoryV1.findAll();
-		imageInfoV1List.forEach(imageInfo -> {
-			String key = String.join("_", IMAGE_KEY_PREFIX, String.valueOf(imageInfo.getLevel()));
-			this.hashOperations.put(key, String.valueOf(imageInfo.getUuid()), imageInfo);
+		List<GameDataEntity> gameDataList = gameDataEntityRepositoryV1.findAll();
+		gameDataList.forEach(gameData -> {
+			String key = String.join("_", IMAGE_KEY_PREFIX, String.valueOf(gameData.getLevel()));
+			this.hashOperations.put(key, String.valueOf(gameData.getUuid()), new RedisGameData(gameData));
 		});
-		String uuid = imageInfoV1List.get(0).getUuid();
+		String uuid = gameDataList.get(0).getUuid();
 		System.out.println("#### " +this.hashOperations.randomEntry(String.join("_", IMAGE_KEY_PREFIX, uuid)));
 	}
 

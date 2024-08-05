@@ -1,4 +1,4 @@
-package ai.imagegame.dto;
+package ai.imagegame.domain;
 
 public enum LevelStatus {
     ALL_CLEAR,

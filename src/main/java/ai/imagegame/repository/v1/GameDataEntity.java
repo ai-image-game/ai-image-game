@@ -1,6 +1,5 @@
 package ai.imagegame.repository.v1;
 
-import ai.imagegame.repository.ImageInfo;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,10 +10,10 @@ import java.time.ZonedDateTime;
 
 
 @Entity
-@Table(name = "image")
 @Getter @Setter
 @NoArgsConstructor
-public class ImageInfoV1 extends ImageInfo {
+@Table(name = "game_data")
+public class GameDataEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
