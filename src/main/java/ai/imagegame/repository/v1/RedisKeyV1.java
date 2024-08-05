@@ -1,4 +1,4 @@
-package ai.imagegame.dto.v1;
+package ai.imagegame.repository.v1;
 
 public final class RedisKeyV1 {
     public final static String GAME = "game_v1";

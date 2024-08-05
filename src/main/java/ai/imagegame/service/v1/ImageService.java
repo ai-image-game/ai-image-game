@@ -1,7 +1,7 @@
 package ai.imagegame.service.v1;
 
 import ai.imagegame.repository.v1.RedisGameDataV1;
-import ai.imagegame.dto.v1.RedisKeyV1;
+import ai.imagegame.repository.v1.RedisKeyV1;
 import ai.imagegame.repository.v1.GameDataEntityV1;
 import ai.imagegame.repository.v1.GameDataEntityRepositoryV1;
 import jakarta.annotation.Resource;
