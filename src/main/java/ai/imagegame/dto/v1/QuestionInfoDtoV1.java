@@ -12,7 +12,7 @@ public class QuestionInfoDtoV1 {
     private String postfix;
 
     public QuestionInfoDtoV1(QuestionInfo questionInfo) {
-        this.answer = questionInfo.getAnswer().toLowerCase().replaceAll("[a-z']", "*");
+        this.answer = questionInfo.getAnswer().toLowerCase();
         this.prefix = questionInfo.getPrefix();
         this.postfix = questionInfo.getPostfix();
     }
