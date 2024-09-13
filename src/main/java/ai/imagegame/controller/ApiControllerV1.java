@@ -1,56 +1,26 @@
 package ai.imagegame.controller;
 
-import ai.imagegame.domain.LevelStatus;
-import ai.imagegame.repository.v1.RedisGameDataV1;
-import ai.imagegame.dto.v1.*;
+import ai.imagegame.dto.v1.ImageGameRequestDtoV1;
+import ai.imagegame.dto.v1.ImageGameResponseDtoV1;
 import ai.imagegame.exception.BadRequestException;
-import ai.imagegame.service.v1.ImageService;
+import ai.imagegame.service.v1.GameServiceV1;
 import lombok.AllArgsConstructor;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/v1/")
 @AllArgsConstructor
 public class ApiControllerV1 {
-    private final ImageService imageService;
+    private final GameServiceV1 gameService;
 
     @PutMapping("image-game")
     public ImageGameResponseDtoV1 imageGameV1(@RequestBody ImageGameRequestDtoV1 request) {
-        if (!request.getGuessInfo().getInputLetters().isEmpty() || request.getGuessInfo().getCurrentGuess() != 0) {
+        if (request.getQuestionInfo().getAnswer().contains("*")) {
             throw new BadRequestException();
         }
-        RedisGameDataV1 redisGameData = imageService.randomImage(request.getGameInfo().getLevel());
-        return new ImageGameResponseDtoV1(request.getGameInfo(), redisGameData);
-    }
-
-    @PutMapping("level")
-    public LevelStatus levelDtoV1(@RequestBody GameInfoDtoV1 gameInfoDtoV1) {
-        if (gameInfoDtoV1.getQuestions() == 0) {
-            if (gameInfoDtoV1.getLevel() == this.imageService.getMaxLevel()) return LevelStatus.ALL_CLEAR;
-            else return LevelStatus.CURRENT_LEVEL_CLEAR;
-        }
-        else throw new BadRequestException();
-    }
-
-    @PutMapping("image")
-    public ImageInfoDtoV1 imageInfoV1(@RequestBody GameInfoDtoV1 gameInfoDtoV1) {
-        RedisGameDataV1 redisGameData = imageService.randomImage(gameInfoDtoV1.getLevel());
-        return new ImageInfoDtoV1(redisGameData.getImageInfo());
-    }
-
-    @PostMapping("guess")
-    public GuessResultDtoV1 guessV1(@RequestBody GuessRequestDtoV1 request) {
-        char guess = request.getGuessInfo().getCurrentGuess();
-        String answer = this.imageService.getAnswer(request.getImageInfo().getUuid());
-        boolean isCorrectAnswer = this.imageService.isCorrectAnswer(answer, request.getGuessInfo().getCurrentGuess(), request.getGuessInfo().getInputLetters());
-        List<Integer> answerIndexList = this.imageService.getAnswerIndexList(answer, request.getGuessInfo().getCurrentGuess());
-        Set<Character> inputLetters = new HashSet<>(request.getGuessInfo().getInputLetters());
-        inputLetters.add(guess);
-
-        return new GuessResultDtoV1(isCorrectAnswer, answerIndexList, inputLetters);
+        return this.gameService.getResponse(request);
     }
 }
