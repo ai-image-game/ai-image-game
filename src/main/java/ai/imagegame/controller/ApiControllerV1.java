@@ -18,7 +18,9 @@ public class ApiControllerV1 {
 
     @PutMapping("image-game")
     public ImageGameResponseDtoV1 imageGameV1(@RequestBody ImageGameRequestDtoV1 request) {
-        if (request.getQuestionInfo().getAnswer().contains("*")) {
+        if (request != null
+                && request.getQuestionInfo().getAnswer() != null
+                && request.getQuestionInfo().getAnswer().contains("*")) {
             throw new BadRequestException();
         }
         return this.gameService.getResponse(request);

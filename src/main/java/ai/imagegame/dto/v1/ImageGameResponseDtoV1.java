@@ -8,6 +8,6 @@ import lombok.NoArgsConstructor;
 public class ImageGameResponseDtoV1 {
     private GameInfoDtoV1 gameInfo;
     private ImageInfoDtoV1 imageInfo;
-    private QuestionInfoDtoV1 question;
-    private GameStatusInfoDtoV1 status;
+    private QuestionInfoDtoV1 questionInfo;
+    private GameStatusInfoDtoV1 statusInfo;
 }

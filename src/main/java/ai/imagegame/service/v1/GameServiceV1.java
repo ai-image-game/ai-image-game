@@ -14,12 +14,12 @@ public class GameServiceV1 {
 
     public ImageGameResponseDtoV1 getResponse(ImageGameRequestDtoV1 request) {
         ImageGameResponseDtoV1 response = new ImageGameResponseDtoV1();
-        response.setStatus(getStatus(request));
-        response.setGameInfo(getGameInfo(request, response.getStatus()));
+        response.setStatusInfo(request == null ? new GameStatusInfoDtoV1() : getStatus(request));
+        response.setGameInfo(request == null ? new GameInfoDtoV1(QUESTIONS) : getGameInfo(request, response.getStatusInfo()));
 
         RedisGameDataV1 redisGameData = imageService.randomImage(response.getGameInfo().getLevel());
         response.setImageInfo(new ImageInfoDtoV1(redisGameData.getImageInfo()));
-        response.setQuestion(new QuestionInfoDtoV1(redisGameData.getQuestionInfo()));
+        response.setQuestionInfo(new QuestionInfoDtoV1(redisGameData.getQuestionInfo()));
 
         return response;
     }
@@ -53,16 +53,16 @@ public class GameServiceV1 {
         if (status.isLevelUp()) {
             gameInfo.setLevel(request.getGameInfo().getLevel() + 1);
             gameInfo.setQuestions(QUESTIONS);
-            gameInfo.setCorrect(0);
+            gameInfo.setCorrects(0);
         } else {
             if (request.getGameInfo().getLevel() == 1
                     && request.getGameInfo().getQuestions() == 0
-                    && request.getGameInfo().getCorrect() == 0) {
+                    && request.getGameInfo().getCorrects() == 0) {
                 gameInfo.setQuestions(QUESTIONS);
-                gameInfo.setCorrect(0);
+                gameInfo.setCorrects(0);
             } else {
                 gameInfo.setQuestions(request.getGameInfo().getQuestions() - 1);
-                gameInfo.setCorrect(request.getGameInfo().getCorrect() + 1);
+                gameInfo.setCorrects(request.getGameInfo().getCorrects() + 1);
             }
             gameInfo.setLevel(request.getGameInfo().getLevel());
         }
