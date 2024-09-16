@@ -5,10 +5,7 @@ import ai.imagegame.dto.v1.ImageGameResponseDtoV1;
 import ai.imagegame.exception.BadRequestException;
 import ai.imagegame.service.v1.GameServiceV1;
 import lombok.AllArgsConstructor;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/")
@@ -24,5 +21,10 @@ public class ApiControllerV1 {
             throw new BadRequestException();
         }
         return this.gameService.getResponse(request);
+    }
+
+    @GetMapping("image-game/{uuid}")
+    public ImageGameResponseDtoV1 imageGameV1(@PathVariable("uuid") String uuid) {
+        return this.gameService.getResponse(uuid);
     }
 }

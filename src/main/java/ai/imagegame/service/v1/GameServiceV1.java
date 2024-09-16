@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class GameServiceV1 {
+    private final static int UNKNOWN_LEVEL = 0;
+    private final static int MIN_LEVEL = 1;
     private final static int MAX_LEVEL = 2;
     private final static int QUESTIONS = 10;
     private final ImageService imageService;
@@ -15,12 +17,23 @@ public class GameServiceV1 {
     public ImageGameResponseDtoV1 getResponse(ImageGameRequestDtoV1 request) {
         ImageGameResponseDtoV1 response = new ImageGameResponseDtoV1();
         response.setStatusInfo(request == null ? new GameStatusInfoDtoV1() : getStatus(request));
-        response.setGameInfo(request == null ? new GameInfoDtoV1(QUESTIONS) : getGameInfo(request, response.getStatusInfo()));
+        response.setGameInfo(request == null ? new GameInfoDtoV1(MIN_LEVEL, QUESTIONS) : getGameInfo(request, response.getStatusInfo()));
 
         RedisGameDataV1 redisGameData = imageService.randomImage(response.getGameInfo().getLevel());
         response.setImageInfo(new ImageInfoDtoV1(redisGameData.getImageInfo()));
         response.setQuestionInfo(new QuestionInfoDtoV1(redisGameData.getQuestionInfo()));
 
+        return response;
+    }
+
+    public ImageGameResponseDtoV1 getResponse(String uuid) {
+        ImageGameResponseDtoV1 response = new ImageGameResponseDtoV1();
+        response.setStatusInfo(new GameStatusInfoDtoV1());
+        response.setGameInfo(new GameInfoDtoV1(UNKNOWN_LEVEL, 0));
+
+        RedisGameDataV1 redisGameData = imageService.get(uuid);
+        response.setImageInfo(new ImageInfoDtoV1(redisGameData.getImageInfo()));
+        response.setQuestionInfo(new QuestionInfoDtoV1(redisGameData.getQuestionInfo()));
         return response;
     }
 

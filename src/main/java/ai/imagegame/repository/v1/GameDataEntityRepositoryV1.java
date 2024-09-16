@@ -6,4 +6,6 @@ import org.springframework.data.jpa.repository.Query;
 public interface GameDataEntityRepositoryV1 extends JpaRepository<GameDataEntityV1, Long> {
     @Query("SELECT MAX(g.level) FROM GameDataEntityV1 g")
     int findMaxLevel();
+
+    GameDataEntityV1 findByUuid(String uuid);
 }

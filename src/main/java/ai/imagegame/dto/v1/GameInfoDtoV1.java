@@ -6,11 +6,11 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class GameInfoDtoV1 {
-    private int level = 1;
+    private int level;
     private int questions;
     private int corrects = 0;
 
-    public GameInfoDtoV1(int questions) {
+    public GameInfoDtoV1(int level, int questions) {
         this.questions = questions;
     }
 }

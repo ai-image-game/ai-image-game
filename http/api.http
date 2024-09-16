@@ -1,8 +1,4 @@
-### get game info
-GET http://localhost/api/v1/game-info
-Accept: application/json
-
-### level 1
+### get image
 PUT http://localhost/api/v1/image-game
 Accept: application/json
 Content-Type: application/json
@@ -27,3 +23,8 @@ Content-Type: application/json
     "prefix": ""
   }
 }
+
+### get image
+GET http://localhost/api/v1/image-game/61f38e47-4e7e-11ef-857a-00155d40afad
+Accept: application/json
+Content-Type: application/json

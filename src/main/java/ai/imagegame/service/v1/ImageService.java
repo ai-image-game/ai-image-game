@@ -30,7 +30,7 @@ public class ImageService {
             this.answerCacheMap.put(gameDataEntity.getUuid(), gameDataEntity.getAnswer());
         });
         this.maxLevel = this.gameDataEntityRepositoryV1.findMaxLevel();
-        this.specialCharacters.addAll(List.of(' '));
+        this.specialCharacters.add(' ');
     }
 
     private void insertGameDataToRedis(GameDataEntityV1 gameDataEntity) {
@@ -46,6 +46,11 @@ public class ImageService {
             throw new RuntimeException("Not found image info.");
         }
         return imagInfoEntry.getValue();
+    }
+
+    public RedisGameDataV1 get(String uuid) {
+        GameDataEntityV1 gameData = this.gameDataEntityRepositoryV1.findByUuid(uuid);
+        return new RedisGameDataV1(gameData);
     }
 
     public String getAnswer(String id) {
