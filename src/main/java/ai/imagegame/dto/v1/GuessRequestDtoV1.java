@@ -8,4 +8,5 @@ public class GuessRequestDtoV1 {
     private ImageInfo imageInfo;
     private GameInfoDtoV1 gameInfo;
     private GuessInfoDtoV1 guessInfo;
+    private QuestionInfoDtoV1 questionInfo;
 }

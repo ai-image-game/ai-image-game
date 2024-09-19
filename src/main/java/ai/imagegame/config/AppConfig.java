@@ -1,6 +1,7 @@
 package ai.imagegame.config;
 
-import ai.imagegame.service.v1.ImageService;
+import ai.imagegame.service.v1.GameServiceV1;
+import jakarta.annotation.Nonnull;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -11,18 +12,18 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 @RequiredArgsConstructor
 public class AppConfig {
-    private final ImageService imageService;
+    private final GameServiceV1 gameServiceV1;
 
     @PostConstruct
     public void initRedisV1() {
-        this.imageService.init();
+        this.gameServiceV1.init();
     }
 
     @Bean
     public WebMvcConfigurer corsConfigurer() {
         return new WebMvcConfigurer() {
             @Override
-            public void addCorsMappings(CorsRegistry registry) {
+            public void addCorsMappings(@Nonnull CorsRegistry registry) {
                 registry.addMapping("/**")
                         .allowedOrigins("http://localhost:3000") // React 앱의 URL
                         .allowedMethods("GET", "POST", "PUT", "DELETE") // 허용할 HTTP 메서드

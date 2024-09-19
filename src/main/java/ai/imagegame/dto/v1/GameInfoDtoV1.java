@@ -11,6 +11,7 @@ public class GameInfoDtoV1 {
     private int corrects = 0;
 
     public GameInfoDtoV1(int level, int questions) {
+        this.level = level;
         this.questions = questions;
     }
 }

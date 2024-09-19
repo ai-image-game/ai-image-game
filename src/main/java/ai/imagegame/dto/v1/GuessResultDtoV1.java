@@ -7,13 +7,13 @@ import java.util.Set;
 
 @Data
 public class GuessResultDtoV1 {
-    private List<Integer> answerIndexList;
-    private Set<Character> inputLetters;
     private boolean isCorrectAnswer;
+    private List<Integer> answerIndexList;
+    private Set<Character> wrongLetters;
 
-    public GuessResultDtoV1(boolean isCorrectAnswer, List<Integer> answerIndexList, Set<Character> inputLetters) {
+    public GuessResultDtoV1(boolean isCorrectAnswer, List<Integer> answerIndexList, Set<Character> wrongLetters) {
         this.isCorrectAnswer = isCorrectAnswer;
         this.answerIndexList = answerIndexList;
-        this.inputLetters = inputLetters;
+        this.wrongLetters = wrongLetters;
     }
 }
