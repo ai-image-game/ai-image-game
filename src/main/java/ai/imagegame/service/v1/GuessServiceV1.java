@@ -1,9 +1,9 @@
 package ai.imagegame.service.v1;
 
-import ai.imagegame.dto.v1.GuessRequestDtoV1;
-import ai.imagegame.dto.v1.GuessResultDtoV1;
+import ai.imagegame.dto.v1.*;
 import ai.imagegame.repository.v1.GameDataEntityV1;
 import lombok.RequiredArgsConstructor;
+import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -19,15 +19,33 @@ public class GuessServiceV1 {
         this.answerCacheMap.put(gameDataEntity.getUuid(), gameDataEntity.getAnswer());
     }
 
-    public GuessResultDtoV1 guess(GuessRequestDtoV1 request, char guess) {
+    public GuessRequestDtoV1 getGuessInfoByHeader(SimpMessageHeaderAccessor messageHeaderAccessor, GuessInfoDtoV1 guessInfo) {
+        if (messageHeaderAccessor.getSessionAttributes() == null) return null;
+
+        GuessRequestDtoV1 requestDto = new GuessRequestDtoV1();
+        requestDto.setGuessInfo(guessInfo);
+        requestDto.setImageInfo((ImageInfoDtoV1) messageHeaderAccessor.getSessionAttributes().get("imageInfo"));
+        requestDto.setGameInfo((GameInfoDtoV1) messageHeaderAccessor.getSessionAttributes().get("gameInfo"));
+        requestDto.setQuestionInfo((QuestionInfoDtoV1) messageHeaderAccessor.getSessionAttributes().get("questionInfo"));
+        return requestDto;
+    }
+
+    public void addGuessInfoToHeader(SimpMessageHeaderAccessor messageHeaderAccessor, GuessResultDtoV1 response) {
+        if (messageHeaderAccessor.getSessionAttributes() != null) {
+            messageHeaderAccessor.getSessionAttributes().put("guessInfo", response);
+        }
+    }
+
+    public GuessResultDtoV1 guess(GuessRequestDtoV1 request) {
         String answer = this.getAnswer(request.getImageInfo().getUuid());
-        List<Integer> answerIndexList = getAnswerIndexList(answer, guess);
+        char input = request.getGuessInfo().getInput();
+        List<Integer> answerIndexList = getAnswerIndexList(answer, input);
         Set<Character> wrongLetters = request.getGuessInfo().getWrongLetters();
         boolean isCorrect = false;
         if (answerIndexList.isEmpty()) {
-            wrongLetters.add(guess);
+            wrongLetters.add(input);
         } else {
-            isCorrect = isCorrectAnswer(answer, guess, request.getQuestionInfo().getMaskedAnswer());
+            isCorrect = isCorrectAnswer(answer, input, request.getQuestionInfo().getMaskedAnswer());
         }
         return new GuessResultDtoV1(isCorrect, answerIndexList, wrongLetters);
     }

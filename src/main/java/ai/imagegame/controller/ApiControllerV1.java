@@ -32,8 +32,8 @@ public class ApiControllerV1 {
     }
 
     @PutMapping("guess")
-    public GuessResponseDtoV1 guessV1(@RequestBody GuessRequestDtoV1 request, @RequestParam char guess) {
-        GuessResultDtoV1 guessResult = guessService.guess(request, guess);
+    public GuessResponseDtoV1 guessV1(@RequestBody GuessRequestDtoV1 request) {
+        GuessResultDtoV1 guessResult = guessService.guess(request);
         GameStatusInfoDtoV1 gameStatusInfo = this.gameStatusService.getStatus(request.getGameInfo(), guessResult.isCorrectAnswer());
         GameInfoDtoV1 gameInfo = this.gameService.getGameInfo(request.getGameInfo(), gameStatusInfo);
         return new GuessResponseDtoV1(guessResult, gameInfo, gameStatusInfo);

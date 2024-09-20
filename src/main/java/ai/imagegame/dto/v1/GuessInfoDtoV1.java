@@ -8,5 +8,6 @@ import java.util.Set;
 @Data
 @NoArgsConstructor
 public class GuessInfoDtoV1 {
+    private char input;
     private Set<Character> wrongLetters;
 }
