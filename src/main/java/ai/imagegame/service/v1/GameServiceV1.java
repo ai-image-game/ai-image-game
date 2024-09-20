@@ -5,6 +5,7 @@ import ai.imagegame.repository.v1.GameDataEntityRepositoryV1;
 import ai.imagegame.repository.v1.GameDataEntityV1;
 import ai.imagegame.repository.v1.RedisGameDataV1;
 import lombok.RequiredArgsConstructor;
+import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -31,6 +32,30 @@ public class GameServiceV1 {
     public RedisGameDataV1 get(String uuid) {
         GameDataEntityV1 gameData = this.gameDataEntityRepositoryV1.findByUuid(uuid);
         return new RedisGameDataV1(gameData);
+    }
+
+    public ImageGameResponseDtoV1 getImageGameResponse(SimpMessageHeaderAccessor messageHeaderAccessor) {
+        ImageGameRequestDtoV1 request = getRequestByHeader(messageHeaderAccessor);
+        return getResponse(request);
+    }
+
+    private ImageGameRequestDtoV1 getRequestByHeader(SimpMessageHeaderAccessor messageHeaderAccessor) {
+        if (messageHeaderAccessor.getSessionAttributes() == null
+                || messageHeaderAccessor.getSessionAttributes().get("gameInfo") == null) return null;
+
+        ImageGameRequestDtoV1 imageGameRequestDto = new ImageGameRequestDtoV1();
+        imageGameRequestDto.setGameInfo((GameInfoDtoV1) messageHeaderAccessor.getSessionAttributes().get("gameInfo"));
+        imageGameRequestDto.setImageInfo((ImageInfoDtoV1) messageHeaderAccessor.getSessionAttributes().get("imageInfo"));
+        imageGameRequestDto.setQuestionInfo((QuestionInfoDtoV1) messageHeaderAccessor.getSessionAttributes().get("questionInfo"));
+        return imageGameRequestDto;
+    }
+
+    public void addImageGameInfoToHeader(SimpMessageHeaderAccessor messageHeaderAccessor, ImageGameResponseDtoV1 response) {
+        if (messageHeaderAccessor.getSessionAttributes() != null) {
+            messageHeaderAccessor.getSessionAttributes().put("gameInfo", response.getGameInfo());
+            messageHeaderAccessor.getSessionAttributes().put("imageInfo", response.getImageInfo());
+            messageHeaderAccessor.getSessionAttributes().put("questionInfo", response.getQuestionInfo());
+        }
     }
 
     public ImageGameResponseDtoV1 getResponse(ImageGameRequestDtoV1 request) {

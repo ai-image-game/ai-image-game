@@ -9,5 +9,4 @@ public class ImageGameRequestDtoV1 {
     private GameInfoDtoV1 gameInfo;
     private ImageInfoDtoV1 imageInfo;
     private QuestionInfoDtoV1 questionInfo;
-    private GuessInfoDtoV1 guessInfo;
 }
