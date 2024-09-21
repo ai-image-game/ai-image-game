@@ -38,7 +38,7 @@ public class GuessServiceV1 {
 
     public GuessResultDtoV1 guess(GuessRequestDtoV1 request) {
         String answer = this.getAnswer(request.getImageInfo().getUuid());
-        char input = request.getGuessInfo().getInput();
+        char input = request.getGuessInfo().getInput().charAt(0);
         List<Integer> answerIndexList = getAnswerIndexList(answer, input);
         Set<Character> wrongLetters = request.getGuessInfo().getWrongLetters();
         boolean isCorrect = false;
@@ -47,18 +47,18 @@ public class GuessServiceV1 {
         } else {
             isCorrect = isCorrectAnswer(answer, input, request.getQuestionInfo().getMaskedAnswer());
         }
-        return new GuessResultDtoV1(isCorrect, answerIndexList, wrongLetters);
+        return new GuessResultDtoV1(input, isCorrect, answerIndexList, wrongLetters);
     }
 
-    public List<Integer> getAnswerIndexList(String answer, char guess) {
+    public List<Integer> getAnswerIndexList(String answer, char input) {
         List<Integer> answerIndexList = new ArrayList<>();
         IntStream.range(0, answer.length())
-                .filter(i -> answer.charAt(i) == guess)
+                .filter(i -> answer.charAt(i) == input)
                 .forEach(answerIndexList::add);
         return answerIndexList;
     }
 
-    public boolean isCorrectAnswer(String answer, char guess, String maskedAnswer) {
+    public boolean isCorrectAnswer(String answer, char input, String maskedAnswer) {
         char[] answerLetters = answer.toCharArray();
         Set<Character> answerSet = new HashSet<>();
         for (char c : answerLetters) {
@@ -70,7 +70,7 @@ public class GuessServiceV1 {
             answerSet.remove(inputLetter);
         }
         answerSet.removeAll(SPECIAL_CHARACTERS);
-        answerSet.remove(guess);
+        answerSet.remove(input);
         return answerSet.isEmpty();
     }
 

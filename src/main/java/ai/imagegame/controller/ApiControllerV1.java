@@ -1,7 +1,6 @@
 package ai.imagegame.controller;
 
 import ai.imagegame.dto.v1.*;
-import ai.imagegame.exception.BadRequestException;
 import ai.imagegame.service.v1.GameServiceV1;
 import ai.imagegame.service.v1.GameStatusService1;
 import ai.imagegame.service.v1.GuessServiceV1;
@@ -18,11 +17,6 @@ public class ApiControllerV1 {
 
     @PutMapping("image-game")
     public ImageGameResponseDtoV1 imageGameV1(@RequestBody ImageGameRequestDtoV1 request) {
-        if (request != null
-                && request.getQuestionInfo().getMaskedAnswer() != null
-                && request.getQuestionInfo().getMaskedAnswer().contains("*")) {
-            throw new BadRequestException();
-        }
         return this.gameService.getResponse(request);
     }
 

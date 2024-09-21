@@ -5,7 +5,6 @@ import ai.imagegame.service.v1.GameServiceV1;
 import ai.imagegame.service.v1.GameStatusService1;
 import ai.imagegame.service.v1.GuessServiceV1;
 import lombok.AllArgsConstructor;
-import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
@@ -19,20 +18,10 @@ public class ImageGameWebsocketController {
     private final GuessServiceV1 guessService;
     private final GameStatusService1 gameStatusService;
 
-    @MessageMapping("/random")
-    @SendToUser("/queue/random")
-    public ImageGameResponseDtoV1 random(SimpMessageHeaderAccessor messageHeaderAccessor) {
-        ImageGameResponseDtoV1 response = this.gameService.getImageGameResponse(messageHeaderAccessor);
-        this.gameService.addImageGameInfoToHeader(messageHeaderAccessor, response);
-        return response;
-    }
-
-    @MessageMapping("/image/{uuid}")
-    @SendToUser("/queue/image")
-    public ImageGameResponseDtoV1 imageGameV1(@DestinationVariable("uuid") String uuid, SimpMessageHeaderAccessor messageHeaderAccessor) {
-        ImageGameResponseDtoV1 response =  this.gameService.getResponse(uuid);
-        this.gameService.addImageGameInfoToHeader(messageHeaderAccessor, response);
-        return response;
+    @MessageMapping("/init")
+    @SendToUser("/queue/init")
+    public void init(SimpMessageHeaderAccessor messageHeaderAccessor, @Payload ImageGameRequestDtoV1 request) {
+        this.gameService.addImageGameInfoToHeader(messageHeaderAccessor, request);
     }
 
     @MessageMapping("/guess")

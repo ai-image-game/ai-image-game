@@ -34,9 +34,13 @@ public class GameServiceV1 {
         return new RedisGameDataV1(gameData);
     }
 
-    public ImageGameResponseDtoV1 getImageGameResponse(SimpMessageHeaderAccessor messageHeaderAccessor) {
-        ImageGameRequestDtoV1 request = getRequestByHeader(messageHeaderAccessor);
-        return getResponse(request);
+    public void getImageGameResponse(SimpMessageHeaderAccessor messageHeaderAccessor, ImageGameRequestDtoV1 request) {
+        verifyRequest(messageHeaderAccessor, request);
+        addImageGameInfoToHeader(messageHeaderAccessor, request);
+    }
+
+    private void verifyRequest(SimpMessageHeaderAccessor messageHeaderAccessor, ImageGameRequestDtoV1 request) {
+        // TODO
     }
 
     private ImageGameRequestDtoV1 getRequestByHeader(SimpMessageHeaderAccessor messageHeaderAccessor) {
@@ -45,16 +49,15 @@ public class GameServiceV1 {
 
         ImageGameRequestDtoV1 imageGameRequestDto = new ImageGameRequestDtoV1();
         imageGameRequestDto.setGameInfo((GameInfoDtoV1) messageHeaderAccessor.getSessionAttributes().get("gameInfo"));
-        imageGameRequestDto.setImageInfo((ImageInfoDtoV1) messageHeaderAccessor.getSessionAttributes().get("imageInfo"));
         imageGameRequestDto.setQuestionInfo((QuestionInfoDtoV1) messageHeaderAccessor.getSessionAttributes().get("questionInfo"));
         return imageGameRequestDto;
     }
 
-    public void addImageGameInfoToHeader(SimpMessageHeaderAccessor messageHeaderAccessor, ImageGameResponseDtoV1 response) {
-        if (messageHeaderAccessor.getSessionAttributes() != null) {
-            messageHeaderAccessor.getSessionAttributes().put("gameInfo", response.getGameInfo());
-            messageHeaderAccessor.getSessionAttributes().put("imageInfo", response.getImageInfo());
-            messageHeaderAccessor.getSessionAttributes().put("questionInfo", response.getQuestionInfo());
+    public void addImageGameInfoToHeader(SimpMessageHeaderAccessor messageHeaderAccessor, ImageGameRequestDtoV1 request) {
+        if (request != null && messageHeaderAccessor.getSessionAttributes() != null) {
+            messageHeaderAccessor.getSessionAttributes().put("gameInfo", request.getGameInfo());
+            messageHeaderAccessor.getSessionAttributes().put("imageInfo", request.getImageInfo());
+            messageHeaderAccessor.getSessionAttributes().put("questionInfo", request.getQuestionInfo());
         }
     }
 
