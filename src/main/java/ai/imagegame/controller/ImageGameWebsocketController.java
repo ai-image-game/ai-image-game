@@ -24,6 +24,15 @@ public class ImageGameWebsocketController {
         this.gameService.addImageGameInfoToHeader(messageHeaderAccessor, request);
     }
 
+    @MessageMapping("/next")
+    @SendToUser("/queue/next")
+    public ImageGameResponseDtoV1 random(SimpMessageHeaderAccessor messageHeaderAccessor) {
+        ImageGameRequestDtoV1 request = this.gameService.getRequestByHeader(messageHeaderAccessor);
+        ImageGameResponseDtoV1 response = this.gameService.getResponse(request);
+        this.gameService.addImageGameInfoToHeader(messageHeaderAccessor, response);
+        return response;
+    }
+
     @MessageMapping("/guess")
     @SendToUser("/queue/guess")
     public GuessResponseDtoV1 guessV1(@Payload GuessInfoDtoV1 guessInfo, SimpMessageHeaderAccessor messageHeaderAccessor) {
@@ -31,8 +40,12 @@ public class ImageGameWebsocketController {
         GuessResultDtoV1 guessResult = guessService.guess(request);
         GameStatusInfoDtoV1 gameStatusInfo = this.gameStatusService.getStatus(request.getGameInfo(), guessResult.isCorrectAnswer());
         GameInfoDtoV1 gameInfo = this.gameService.getGameInfo(request.getGameInfo(), gameStatusInfo);
-        this.guessService.addGuessInfoToHeader(messageHeaderAccessor, guessResult);
+        QuestionInfoDtoV1 questionInfo = this.guessService.getUpdatedQuestionInfo(guessResult, request.getQuestionInfo());
+        GuessResponseDtoV1 response = GuessResponseDtoV1.builder()
+                                        .guessResult(guessResult).gameInfo(gameInfo).statusInfo(gameStatusInfo).questionInfo(questionInfo)
+                                    .build();
+        this.guessService.addGuessInfoToHeader(messageHeaderAccessor, response);
         this.gameService.addGameInfo(messageHeaderAccessor, gameInfo);
-        return new GuessResponseDtoV1(guessResult, gameInfo, gameStatusInfo);
+        return response;
     }
 }

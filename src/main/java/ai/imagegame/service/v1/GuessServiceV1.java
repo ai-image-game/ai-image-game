@@ -30,9 +30,10 @@ public class GuessServiceV1 {
         return requestDto;
     }
 
-    public void addGuessInfoToHeader(SimpMessageHeaderAccessor messageHeaderAccessor, GuessResultDtoV1 response) {
+    public void addGuessInfoToHeader(SimpMessageHeaderAccessor messageHeaderAccessor, GuessResponseDtoV1 response) {
         if (messageHeaderAccessor.getSessionAttributes() != null) {
-            messageHeaderAccessor.getSessionAttributes().put("guessInfo", response);
+            messageHeaderAccessor.getSessionAttributes().put("guessInfo", response.getGuessResult());
+            messageHeaderAccessor.getSessionAttributes().put("questionInfo", response.getQuestionInfo());
         }
     }
 
@@ -76,5 +77,17 @@ public class GuessServiceV1 {
 
     public String getAnswer(String id) {
         return this.answerCacheMap.get(id).toLowerCase();
+    }
+
+
+    public QuestionInfoDtoV1 getUpdatedQuestionInfo(GuessResultDtoV1 guessResult, QuestionInfoDtoV1 questionInfo) {
+        if (!guessResult.getAnswerIndexList().isEmpty()) {
+            char[] oldMaskedAnswer = questionInfo.getMaskedAnswer().toCharArray();
+            for (int index : guessResult.getAnswerIndexList()) {
+                oldMaskedAnswer[index] = guessResult.getInput();
+            }
+            questionInfo.setMaskedAnswer(new String(oldMaskedAnswer));
+        }
+        return questionInfo;
     }
 }

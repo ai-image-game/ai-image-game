@@ -30,6 +30,8 @@ public class ApiControllerV1 {
         GuessResultDtoV1 guessResult = guessService.guess(request);
         GameStatusInfoDtoV1 gameStatusInfo = this.gameStatusService.getStatus(request.getGameInfo(), guessResult.isCorrectAnswer());
         GameInfoDtoV1 gameInfo = this.gameService.getGameInfo(request.getGameInfo(), gameStatusInfo);
-        return new GuessResponseDtoV1(guessResult, gameInfo, gameStatusInfo);
+        return GuessResponseDtoV1.builder()
+                .guessResult(guessResult).gameInfo(gameInfo).statusInfo(gameStatusInfo)
+                .build();
     }
 }

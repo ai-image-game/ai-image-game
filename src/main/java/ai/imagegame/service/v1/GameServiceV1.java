@@ -43,13 +43,14 @@ public class GameServiceV1 {
         // TODO
     }
 
-    private ImageGameRequestDtoV1 getRequestByHeader(SimpMessageHeaderAccessor messageHeaderAccessor) {
+    public ImageGameRequestDtoV1 getRequestByHeader(SimpMessageHeaderAccessor messageHeaderAccessor) {
         if (messageHeaderAccessor.getSessionAttributes() == null
                 || messageHeaderAccessor.getSessionAttributes().get("gameInfo") == null) return null;
 
         ImageGameRequestDtoV1 imageGameRequestDto = new ImageGameRequestDtoV1();
         imageGameRequestDto.setGameInfo((GameInfoDtoV1) messageHeaderAccessor.getSessionAttributes().get("gameInfo"));
         imageGameRequestDto.setQuestionInfo((QuestionInfoDtoV1) messageHeaderAccessor.getSessionAttributes().get("questionInfo"));
+        imageGameRequestDto.setImageInfo((ImageInfoDtoV1) messageHeaderAccessor.getSessionAttributes().get("imageInfo"));
         return imageGameRequestDto;
     }
 
@@ -58,6 +59,14 @@ public class GameServiceV1 {
             messageHeaderAccessor.getSessionAttributes().put("gameInfo", request.getGameInfo());
             messageHeaderAccessor.getSessionAttributes().put("imageInfo", request.getImageInfo());
             messageHeaderAccessor.getSessionAttributes().put("questionInfo", request.getQuestionInfo());
+        }
+    }
+
+    public void addImageGameInfoToHeader(SimpMessageHeaderAccessor messageHeaderAccessor, ImageGameResponseDtoV1 response) {
+        if (response != null && messageHeaderAccessor.getSessionAttributes() != null) {
+            messageHeaderAccessor.getSessionAttributes().put("gameInfo", response.getGameInfo());
+            messageHeaderAccessor.getSessionAttributes().put("imageInfo", response.getImageInfo());
+            messageHeaderAccessor.getSessionAttributes().put("questionInfo", response.getQuestionInfo());
         }
     }
 
@@ -72,7 +81,12 @@ public class GameServiceV1 {
         response.setStatusInfo(request == null ? new GameStatusInfoDtoV1() : gameStatusService1.getStatus(request.getGameInfo()));
         response.setGameInfo(request == null ? new GameInfoDtoV1(MIN_LEVEL, QUESTIONS) : getGameInfo(request.getGameInfo(), response.getStatusInfo()));
 
-        RedisGameDataV1 redisGameData = redisGameDataServiceV1.randomInfo(response.getGameInfo().getLevel());
+        RedisGameDataV1 redisGameData;
+        if (request != null && request.getImageInfo() != null) {
+            redisGameData = redisGameDataServiceV1.randomInfo(response.getGameInfo().getLevel(), request.getImageInfo());
+        } else {
+            redisGameData = redisGameDataServiceV1.randomInfo(response.getGameInfo().getLevel());
+        }
         response.setImageInfo(new ImageInfoDtoV1(redisGameData.getImageInfo()));
         response.setQuestionInfo(new QuestionInfoDtoV1(redisGameData.getQuestionInfo()));
 

@@ -1,5 +1,6 @@
 package ai.imagegame.service.v1;
 
+import ai.imagegame.dto.v1.ImageInfoDtoV1;
 import ai.imagegame.repository.v1.GameDataEntityV1;
 import ai.imagegame.repository.v1.RedisGameDataV1;
 import ai.imagegame.repository.v1.RedisKeyV1;
@@ -21,6 +22,20 @@ public class RedisGameDataServiceV1 {
         if (randomEntry == null || randomEntry.getKey() == null) {
             throw new RuntimeException("Not found image and question info.");
         }
+        return randomEntry.getValue();
+    }
+
+    public RedisGameDataV1 randomInfo(int level, ImageInfoDtoV1 imageInfo) {
+        Map.Entry<String, RedisGameDataV1> randomEntry = this.hashOperationsV1.randomEntry(RedisKeyV1.levelImage(level));
+        if (randomEntry == null || randomEntry.getKey() == null) {
+            throw new RuntimeException("Not found image and question info.");
+        }
+
+        String newImgUuid = randomEntry.getValue().getImageInfo().getUuid();
+        if (imageInfo != null && newImgUuid.equals(imageInfo.getUuid())) {
+            return randomInfo(level, imageInfo);
+        }
+
         return randomEntry.getValue();
     }
 
