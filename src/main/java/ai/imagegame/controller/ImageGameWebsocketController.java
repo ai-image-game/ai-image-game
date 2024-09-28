@@ -38,7 +38,7 @@ public class ImageGameWebsocketController {
     public GuessResponseDtoV1 guessV1(@Payload GuessInfoDtoV1 guessInfo, SimpMessageHeaderAccessor messageHeaderAccessor) {
         GuessRequestDtoV1 request = guessService.getGuessInfoByHeader(messageHeaderAccessor, guessInfo);
         GuessResultDtoV1 guessResult = guessService.guess(request);
-        GameStatusInfoDtoV1 gameStatusInfo = this.gameStatusService.getStatus(request.getGameInfo(), guessResult.isCorrectAnswer());
+        GameStatusInfoDtoV1 gameStatusInfo = this.gameStatusService.getStatus(request.getGameInfo(), guessResult);
         GameInfoDtoV1 gameInfo = this.gameService.getGameInfo(request.getGameInfo(), gameStatusInfo);
         QuestionInfoDtoV1 questionInfo = this.guessService.getUpdatedQuestionInfo(guessResult, request.getQuestionInfo());
         GuessResponseDtoV1 response = GuessResponseDtoV1.builder()

@@ -28,7 +28,7 @@ public class ApiControllerV1 {
     @PutMapping("guess")
     public GuessResponseDtoV1 guessV1(@RequestBody GuessRequestDtoV1 request) {
         GuessResultDtoV1 guessResult = guessService.guess(request);
-        GameStatusInfoDtoV1 gameStatusInfo = this.gameStatusService.getStatus(request.getGameInfo(), guessResult.isCorrectAnswer());
+        GameStatusInfoDtoV1 gameStatusInfo = this.gameStatusService.getStatus(request.getGameInfo(), guessResult);
         GameInfoDtoV1 gameInfo = this.gameService.getGameInfo(request.getGameInfo(), gameStatusInfo);
         return GuessResponseDtoV1.builder()
                 .guessResult(guessResult).gameInfo(gameInfo).statusInfo(gameStatusInfo)

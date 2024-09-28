@@ -7,4 +7,5 @@ public class GameStatusInfoDtoV1 {
     boolean isCorrect = false;
     boolean isClear = false;
     boolean isLevelUp = false;
+    boolean isGameOver = false;
 }

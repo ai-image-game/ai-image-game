@@ -78,7 +78,7 @@ public class GameServiceV1 {
 
     public ImageGameResponseDtoV1 getResponse(ImageGameRequestDtoV1 request) {
         ImageGameResponseDtoV1 response = new ImageGameResponseDtoV1();
-        response.setStatusInfo(request == null ? new GameStatusInfoDtoV1() : gameStatusService1.getStatus(request.getGameInfo()));
+        response.setStatusInfo(new GameStatusInfoDtoV1());
         response.setGameInfo(request == null ? new GameInfoDtoV1(MIN_LEVEL, QUESTIONS) : getGameInfo(request.getGameInfo(), response.getStatusInfo()));
 
         RedisGameDataV1 redisGameData;

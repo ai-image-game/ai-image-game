@@ -2,6 +2,7 @@ package ai.imagegame.service.v1;
 
 import ai.imagegame.dto.v1.GameInfoDtoV1;
 import ai.imagegame.dto.v1.GameStatusInfoDtoV1;
+import ai.imagegame.dto.v1.GuessResultDtoV1;
 import ai.imagegame.repository.v1.GameDataEntityRepositoryV1;
 import lombok.Getter;
 import org.springframework.stereotype.Service;
@@ -10,24 +11,25 @@ import org.springframework.stereotype.Service;
 @Service
 public class GameStatusService1 {
     private int maxLevel = 0;
+    private final int maxWrongLetters = 10;
 
     public GameStatusService1(GameDataEntityRepositoryV1 gameDataEntityRepositoryV1) {
         this.maxLevel = gameDataEntityRepositoryV1.findMaxLevel();
     }
 
-    public GameStatusInfoDtoV1 getStatus(GameInfoDtoV1 request) {
-        return getStatus(request, false);
-    }
-
-    public GameStatusInfoDtoV1 getStatus(GameInfoDtoV1 request, boolean isCorrect) {
+    public GameStatusInfoDtoV1 getStatus(GameInfoDtoV1 request, GuessResultDtoV1 guessResult) {
         GameStatusInfoDtoV1 status = new GameStatusInfoDtoV1();
-        status.setCorrect(isCorrect);
+        status.setCorrect(guessResult.isCorrectAnswer());
 
-        if (isCorrect) {
+        if (guessResult.isCorrectAnswer()) {
             if (isClear(request.getLevel(), request.getQuestions())) {
                 status.setClear(true);
-            }  else if (isLevelUp(request.getQuestions())) {
+            } else if (isLevelUp(request.getQuestions())) {
                 status.setLevelUp(true);
+            }
+        } else {
+            if (guessResult.getWrongLetters().size() >= maxWrongLetters) {
+                status.setGameOver(true);
             }
         }
         return status;
