@@ -8,4 +8,5 @@ public class GameStatusInfoDtoV1 {
     boolean isClear = false;
     boolean isLevelUp = false;
     boolean isGameOver = false;
+    int retryCount = 0;
 }

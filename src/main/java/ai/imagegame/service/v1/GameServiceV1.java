@@ -16,10 +16,10 @@ public class GameServiceV1 {
     private final static int UNKNOWN_LEVEL = 0;
     private final static int MIN_LEVEL = 1;
     private final static int QUESTIONS = 10;
+    public final static int MAX_RETRY_COUNT = 3;
     private final RedisGameDataServiceV1 redisGameDataServiceV1;
     private final GameDataEntityRepositoryV1 gameDataEntityRepositoryV1;
     private final GuessServiceV1 guessServiceV1;
-    private final GameStatusService1 gameStatusService1;
 
     public void init() {
         List<GameDataEntityV1> gameDataEntityV1List = this.gameDataEntityRepositoryV1.findAll();
@@ -54,6 +54,15 @@ public class GameServiceV1 {
         return imageGameRequestDto;
     }
 
+    public GameInfoDtoV1 reduceRetryCount(SimpMessageHeaderAccessor messageHeaderAccessor) {
+        if (messageHeaderAccessor.getSessionAttributes() == null
+                || messageHeaderAccessor.getSessionAttributes().get("gameInfo") == null) throw new RuntimeException("GameInfo is not defined in session.");
+        GameInfoDtoV1 gameInfo = ((GameInfoDtoV1) messageHeaderAccessor.getSessionAttributes().get("gameInfo"));
+        int retry = gameInfo.getRetry();
+        gameInfo.setRetry(retry == 0 ? 0 : retry - 1);
+        return gameInfo;
+    }
+
     public void addImageGameInfoToHeader(SimpMessageHeaderAccessor messageHeaderAccessor, ImageGameRequestDtoV1 request) {
         if (request != null && messageHeaderAccessor.getSessionAttributes() != null) {
             messageHeaderAccessor.getSessionAttributes().put("gameInfo", request.getGameInfo());
@@ -79,10 +88,10 @@ public class GameServiceV1 {
     public ImageGameResponseDtoV1 getResponse(ImageGameRequestDtoV1 request) {
         ImageGameResponseDtoV1 response = new ImageGameResponseDtoV1();
         response.setStatusInfo(new GameStatusInfoDtoV1());
-        response.setGameInfo(request == null ? new GameInfoDtoV1(MIN_LEVEL, QUESTIONS) : getGameInfo(request.getGameInfo(), response.getStatusInfo()));
+        response.setGameInfo(request.getGameInfo() == null ? new GameInfoDtoV1(MIN_LEVEL, QUESTIONS) : getGameInfo(request.getGameInfo(), response.getStatusInfo()));
 
         RedisGameDataV1 redisGameData;
-        if (request != null && request.getImageInfo() != null) {
+        if (request.getImageInfo() != null) {
             redisGameData = redisGameDataServiceV1.randomInfo(response.getGameInfo().getLevel(), request.getImageInfo());
         } else {
             redisGameData = redisGameDataServiceV1.randomInfo(response.getGameInfo().getLevel());
@@ -110,21 +119,25 @@ public class GameServiceV1 {
             gameInfo.setLevel(request.getLevel() + 1);
             gameInfo.setQuestions(QUESTIONS);
             gameInfo.setCorrects(0);
+            gameInfo.setRetry(MAX_RETRY_COUNT);
         } else {
             if (status.isCorrect()) {
                 gameInfo.setLevel(request.getLevel());
                 gameInfo.setQuestions(request.getQuestions() - 1);
                 gameInfo.setCorrects(request.getCorrects() + 1);
+                gameInfo.setRetry(MAX_RETRY_COUNT);
             } else if (request.getLevel() == 1
                     && request.getQuestions() == 0
                     && request.getCorrects() == 0) {
                 gameInfo.setLevel(request.getLevel());
                 gameInfo.setQuestions(QUESTIONS);
                 gameInfo.setCorrects(0);
+                gameInfo.setRetry(MAX_RETRY_COUNT);
             } else {
                 gameInfo.setCorrects(request.getCorrects());
                 gameInfo.setQuestions(request.getQuestions());
                 gameInfo.setLevel(request.getLevel());
+                gameInfo.setRetry(request.getRetry());
             }
         }
         return gameInfo;

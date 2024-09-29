@@ -48,4 +48,12 @@ public class ImageGameWebsocketController {
         this.gameService.addGameInfo(messageHeaderAccessor, gameInfo);
         return response;
     }
+
+    @MessageMapping("/retry")
+    @SendToUser("/queue/retry")
+    public GameInfoDtoV1 retryV1(SimpMessageHeaderAccessor messageHeaderAccessor) {
+        GameInfoDtoV1 gameInfo = this.gameService.reduceRetryCount(messageHeaderAccessor);
+        this.gameService.addGameInfo(messageHeaderAccessor, gameInfo);
+        return gameInfo;
+    }
 }
