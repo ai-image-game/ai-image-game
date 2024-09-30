@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 @Getter
 @Service
 public class GameStatusService1 {
-    private int maxLevel = 0;
+    private final int maxLevel;
     private final int MAX_WRONG_LETTERS = 7;
 
     public GameStatusService1(GameDataEntityRepositoryV1 gameDataEntityRepositoryV1) {
@@ -28,7 +28,7 @@ public class GameStatusService1 {
                 status.setLevelUp(true);
             }
         } else {
-            if (guessResult.getWrongLetters().size() >= (MAX_WRONG_LETTERS + (request.getUsedRetry() * MAX_WRONG_LETTERS))) {
+            if (guessResult.getWrongLetters().size() >= MAX_WRONG_LETTERS) {
                 status.setGameOver(true);
             }
         }

@@ -56,10 +56,15 @@ public class GameServiceV1 {
 
     public GameInfoDtoV1 reduceRetryCount(SimpMessageHeaderAccessor messageHeaderAccessor) {
         if (messageHeaderAccessor.getSessionAttributes() == null
-                || messageHeaderAccessor.getSessionAttributes().get("gameInfo") == null) throw new RuntimeException("GameInfo is not defined in session.");
+                || messageHeaderAccessor.getSessionAttributes().get("gameInfo") == null) {
+            throw new RuntimeException("GameInfo is not defined in session.");
+        }
+
         GameInfoDtoV1 gameInfo = ((GameInfoDtoV1) messageHeaderAccessor.getSessionAttributes().get("gameInfo"));
         int retry = gameInfo.getRetry();
         gameInfo.setRetry(retry == 0 ? 0 : retry - 1);
+
+        messageHeaderAccessor.getSessionAttributes().put("gameInfo", gameInfo);
         return gameInfo;
     }
 

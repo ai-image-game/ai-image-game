@@ -12,8 +12,12 @@ public class QuestionInfoDtoV1 {
     private String postfix;
 
     public QuestionInfoDtoV1(QuestionInfo questionInfo) {
-        this.maskedAnswer = questionInfo.getAnswer().toLowerCase().replaceAll("[a-z']", "*");
+        this.maskedAnswer = maskAnswer(questionInfo.getAnswer());
         this.prefix = questionInfo.getPrefix();
         this.postfix = questionInfo.getPostfix();
+    }
+
+    public String maskAnswer(String answer) {
+        return answer.toLowerCase().replaceAll("[a-z']", "*");
     }
 }

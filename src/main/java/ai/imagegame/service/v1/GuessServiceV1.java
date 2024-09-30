@@ -37,6 +37,27 @@ public class GuessServiceV1 {
         }
     }
 
+    public GuessResultDtoV1 initGuessResult(SimpMessageHeaderAccessor messageHeaderAccessor) {
+        if (messageHeaderAccessor.getSessionAttributes() != null) {
+            GuessResultDtoV1 newGuessResult = new GuessResultDtoV1();
+            messageHeaderAccessor.getSessionAttributes().put("guessInfo", new GuessResultDtoV1());
+            return newGuessResult;
+        }
+        return new GuessResultDtoV1();
+    }
+
+    public QuestionInfoDtoV1 initQuestionInfo(SimpMessageHeaderAccessor messageHeaderAccessor) {
+        if (messageHeaderAccessor.getSessionAttributes() != null) {
+            ImageInfoDtoV1 imageInfo = (ImageInfoDtoV1) messageHeaderAccessor.getSessionAttributes().get("imageInfo");
+            QuestionInfoDtoV1 questionInfo = (QuestionInfoDtoV1) messageHeaderAccessor.getSessionAttributes().get("questionInfo");
+            String maskedAnswer = questionInfo.maskAnswer(getAnswer(imageInfo.getUuid()));
+            questionInfo.setMaskedAnswer(maskedAnswer);
+            messageHeaderAccessor.getSessionAttributes().put("questionInfo", questionInfo);
+            return questionInfo;
+        }
+        return new QuestionInfoDtoV1();
+    }
+
     public GuessResultDtoV1 guess(GuessRequestDtoV1 request) {
         String answer = this.getAnswer(request.getImageInfo().getUuid());
         char input = request.getGuessInfo().getInput().charAt(0);
