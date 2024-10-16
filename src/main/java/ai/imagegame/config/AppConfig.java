@@ -16,7 +16,7 @@ public class AppConfig {
 
     @PostConstruct
     public void initRedisV1() {
-        this.gameServiceV1.init();
+       this.gameServiceV1.init();
     }
 
     @Bean

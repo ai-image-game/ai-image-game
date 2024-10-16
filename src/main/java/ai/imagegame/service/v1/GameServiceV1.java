@@ -120,13 +120,17 @@ public class GameServiceV1 {
 
     public GameInfoDtoV1 getGameInfo(GameInfoDtoV1 request, GameStatusInfoDtoV1 status) {
         GameInfoDtoV1 gameInfo = new GameInfoDtoV1();
-        if (status.isLevelUp()) {
+            if (status.isLevelUp()) {
             gameInfo.setLevel(request.getLevel() + 1);
-            gameInfo.setQuestions(QUESTIONS);
-            gameInfo.setCorrects(0);
+            gameInfo.setQuestions(request.getQuestions() - 1);
+            gameInfo.setCorrects(request.getCorrects() + 1);
             gameInfo.setRetry(MAX_RETRY_COUNT);
         } else {
-            if (status.isCorrect()) {
+            if (request.getLevel() != 1
+                    && request.getQuestions() == 0
+                    && request.getCorrects() == QUESTIONS) {
+                initGameInfo(gameInfo, request);
+            } else if (status.isCorrect()) {
                 gameInfo.setLevel(request.getLevel());
                 gameInfo.setQuestions(request.getQuestions() - 1);
                 gameInfo.setCorrects(request.getCorrects() + 1);
@@ -134,10 +138,7 @@ public class GameServiceV1 {
             } else if (request.getLevel() == 1
                     && request.getQuestions() == 0
                     && request.getCorrects() == 0) {
-                gameInfo.setLevel(request.getLevel());
-                gameInfo.setQuestions(QUESTIONS);
-                gameInfo.setCorrects(0);
-                gameInfo.setRetry(MAX_RETRY_COUNT);
+                initGameInfo(gameInfo, request);
             } else {
                 gameInfo.setCorrects(request.getCorrects());
                 gameInfo.setQuestions(request.getQuestions());
@@ -146,5 +147,12 @@ public class GameServiceV1 {
             }
         }
         return gameInfo;
+    }
+
+    private void initGameInfo(GameInfoDtoV1 gameInfo, GameInfoDtoV1 request) {
+        gameInfo.setLevel(request.getLevel());
+        gameInfo.setQuestions(QUESTIONS);
+        gameInfo.setCorrects(0);
+        gameInfo.setRetry(MAX_RETRY_COUNT);
     }
 }
