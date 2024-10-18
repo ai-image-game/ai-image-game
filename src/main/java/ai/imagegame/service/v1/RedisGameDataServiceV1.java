@@ -15,28 +15,36 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class RedisGameDataServiceV1 {
     @Resource(name = "redisTemplate")
-    private HashOperations<String, String, RedisGameDataV1> hashOperationsV1;
+    private HashOperations<String, String, Object> hashOperationsV1;
 
     public RedisGameDataV1 randomInfo(int level) {
-        Map.Entry<String, RedisGameDataV1> randomEntry = this.hashOperationsV1.randomEntry(RedisKeyV1.levelImage(level));
+        Map.Entry<String, Object> randomEntry = this.hashOperationsV1.randomEntry(RedisKeyV1.levelImage(level));
         if (randomEntry == null || randomEntry.getKey() == null) {
             throw new RuntimeException("Not found image and question info.");
         }
-        return randomEntry.getValue();
+        return (RedisGameDataV1) randomEntry.getValue();
     }
 
     public RedisGameDataV1 randomInfo(int level, ImageInfoDtoV1 imageInfo) {
-        Map.Entry<String, RedisGameDataV1> randomEntry = this.hashOperationsV1.randomEntry(RedisKeyV1.levelImage(level));
+        Map.Entry<String, Object> randomEntry = this.hashOperationsV1.randomEntry(RedisKeyV1.levelImage(level));
         if (randomEntry == null || randomEntry.getKey() == null) {
             throw new RuntimeException("Not found image and question info.");
         }
 
-        String newImgUuid = randomEntry.getValue().getImageInfo().getUuid();
+        String newImgUuid = ((RedisGameDataV1) randomEntry.getValue()).getImageInfo().getUuid();
         if (imageInfo != null && newImgUuid.equals(imageInfo.getUuid())) {
             return randomInfo(level, imageInfo);
         }
 
-        return randomEntry.getValue();
+        return (RedisGameDataV1) randomEntry.getValue();
+    }
+
+    public void insertAnswerToRedis(String uuid, String answer) {
+        this.hashOperationsV1.put(RedisKeyV1.ANSWER, uuid, answer);
+    }
+
+    public Map<String, Object> getAllAnswers() {
+        return this.hashOperationsV1.entries(RedisKeyV1.ANSWER);
     }
 
     public void insertGameDataToRedis(GameDataEntityV1 gameDataEntity) {

@@ -1,23 +1,20 @@
 package ai.imagegame.service.v1;
 
 import ai.imagegame.dto.v1.*;
-import ai.imagegame.repository.v1.GameDataEntityV1;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
 import java.util.stream.IntStream;
 
+@Setter
 @Service
 @RequiredArgsConstructor
 public class GuessServiceV1 {
-    private Map<String, String> answerCacheMap = new HashMap<>();
+    private Map<String, Object> answerCacheMap = new HashMap<>();
     private final static Set<Character> SPECIAL_CHARACTERS = Set.of(' ');
-
-    public void addAnswerCacheMap(GameDataEntityV1 gameDataEntity) {
-        this.answerCacheMap.put(gameDataEntity.getUuid(), gameDataEntity.getAnswer());
-    }
 
     public GuessRequestDtoV1 getGuessInfoByHeader(SimpMessageHeaderAccessor messageHeaderAccessor, GuessInfoDtoV1 guessInfo) {
         if (messageHeaderAccessor.getSessionAttributes() == null) return null;
@@ -97,9 +94,8 @@ public class GuessServiceV1 {
     }
 
     public String getAnswer(String id) {
-        return this.answerCacheMap.get(id).toLowerCase();
+        return ((String) this.answerCacheMap.get(id)).toLowerCase();
     }
-
 
     public QuestionInfoDtoV1 getUpdatedQuestionInfo(GuessResultDtoV1 guessResult, QuestionInfoDtoV1 questionInfo) {
         if (!guessResult.getAnswerIndexList().isEmpty()) {

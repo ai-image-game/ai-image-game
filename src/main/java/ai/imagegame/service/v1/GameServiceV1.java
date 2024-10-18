@@ -9,6 +9,7 @@ import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -24,23 +25,19 @@ public class GameServiceV1 {
     public void init() {
         List<GameDataEntityV1> gameDataEntityV1List = this.gameDataEntityRepositoryV1.findAll();
         gameDataEntityV1List.forEach(gameDataEntity -> {
-            redisGameDataServiceV1.insertGameDataToRedis(gameDataEntity);
-            this.guessServiceV1.addAnswerCacheMap(gameDataEntity);
+            if (gameDataEntity.isVisible()) {
+                redisGameDataServiceV1.insertGameDataToRedis(gameDataEntity);
+                this.redisGameDataServiceV1.insertAnswerToRedis(gameDataEntity.getUuid(), gameDataEntity.getAnswer());
+            }
         });
+
+        Map<String, Object> answersMap = this.redisGameDataServiceV1.getAllAnswers();
+        this.guessServiceV1.setAnswerCacheMap(answersMap);
     }
 
     public RedisGameDataV1 get(String uuid) {
         GameDataEntityV1 gameData = this.gameDataEntityRepositoryV1.findByUuid(uuid);
         return new RedisGameDataV1(gameData);
-    }
-
-    public void getImageGameResponse(SimpMessageHeaderAccessor messageHeaderAccessor, ImageGameRequestDtoV1 request) {
-        verifyRequest(messageHeaderAccessor, request);
-        addImageGameInfoToHeader(messageHeaderAccessor, request);
-    }
-
-    private void verifyRequest(SimpMessageHeaderAccessor messageHeaderAccessor, ImageGameRequestDtoV1 request) {
-        // TODO
     }
 
     public ImageGameRequestDtoV1 getRequestByHeader(SimpMessageHeaderAccessor messageHeaderAccessor) {
@@ -126,18 +123,14 @@ public class GameServiceV1 {
             gameInfo.setCorrects(request.getCorrects() + 1);
             gameInfo.setRetry(MAX_RETRY_COUNT);
         } else {
-            if (request.getLevel() != 1
-                    && request.getQuestions() == 0
-                    && request.getCorrects() == QUESTIONS) {
+            if (isLevelUpFirstQuestion(request)) {
                 initGameInfo(gameInfo, request);
             } else if (status.isCorrect()) {
                 gameInfo.setLevel(request.getLevel());
                 gameInfo.setQuestions(request.getQuestions() - 1);
                 gameInfo.setCorrects(request.getCorrects() + 1);
                 gameInfo.setRetry(MAX_RETRY_COUNT);
-            } else if (request.getLevel() == 1
-                    && request.getQuestions() == 0
-                    && request.getCorrects() == 0) {
+            } else if (isSharedQuestion(request)) {
                 initGameInfo(gameInfo, request);
             } else {
                 gameInfo.setCorrects(request.getCorrects());
@@ -147,6 +140,18 @@ public class GameServiceV1 {
             }
         }
         return gameInfo;
+    }
+
+    private boolean isLevelUpFirstQuestion(GameInfoDtoV1 request) {
+        return request.getLevel() != 1
+                && request.getQuestions() == 0
+                && request.getCorrects() == QUESTIONS;
+    }
+
+    private boolean isSharedQuestion(GameInfoDtoV1 request) {
+        return request.getLevel() == 1
+                && request.getQuestions() == 0
+                && request.getCorrects() == 0;
     }
 
     private void initGameInfo(GameInfoDtoV1 gameInfo, GameInfoDtoV1 request) {

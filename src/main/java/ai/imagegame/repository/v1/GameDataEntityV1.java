@@ -24,6 +24,7 @@ public class GameDataEntityV1 {
     @Column(length = 30) private String prefix;
     @Column(nullable = false, length = 30) private String answer;
     @Column(length = 30) private String postfix;
+    private boolean visible;
     @CreatedDate
     private ZonedDateTime createDate;
 }
