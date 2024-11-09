@@ -20,6 +20,11 @@ public class ApiControllerV1 {
         return this.gameService.getResponse(request);
     }
 
+    @GetMapping("image-game/reconnect")
+    public ReconnectResponseDtoV1 reconnect(@CookieValue("savedData") String savedData) throws Exception {
+        return this.gameService.decryptData(savedData);
+    }
+
     @GetMapping("image-game/{uuid}")
     public ImageGameResponseDtoV1 imageGameV1(@PathVariable("uuid") String uuid) {
         return this.gameService.getResponse(uuid);

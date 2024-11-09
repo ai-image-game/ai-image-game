@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class GameStatusService1 {
     private final int maxLevel;
-    private final int MAX_WRONG_LETTERS = 7;
+    private final int MAX_WRONG_LETTERS = 6;
 
     public GameStatusService1(GameDataEntityRepositoryV1 gameDataEntityRepositoryV1) {
         this.maxLevel = gameDataEntityRepositoryV1.findMaxLevel();
