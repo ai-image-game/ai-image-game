@@ -1,0 +1,1 @@
+SELECT LEFT(SHA2(UUID(), 256), 36) AS Random_Hash_UUID;
