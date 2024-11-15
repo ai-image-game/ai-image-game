@@ -1,8 +1,6 @@
 package ai.imagegame.service.v1;
 
 import ai.imagegame.dto.v1.*;
-import ai.imagegame.repository.v1.GameDataEntityRepositoryV1;
-import ai.imagegame.repository.v1.GameDataEntityV1;
 import ai.imagegame.repository.v1.RedisGameDataV1;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -25,28 +23,18 @@ public class GameServiceV1 {
     private final static int QUESTIONS = 10;
     public final static int MAX_RETRY_COUNT = 3;
     private final RedisGameDataServiceV1 redisGameDataServiceV1;
-    private final GameDataEntityRepositoryV1 gameDataEntityRepositoryV1;
     private final GuessServiceV1 guessServiceV1;
     private final ObjectMapper objectMapper;
     @Value("${secret.key}")
     private String secretKey;
 
-    public void init() {
-        /*List<GameDataEntityV1> gameDataEntityV1List = this.gameDataEntityRepositoryV1.findAll();
-        gameDataEntityV1List.forEach(gameDataEntity -> {
-            if (gameDataEntity.isVisible()) {
-                redisGameDataServiceV1.insertGameDataToRedis(gameDataEntity);
-                this.redisGameDataServiceV1.insertAnswerToRedis(gameDataEntity.getUuid(), gameDataEntity.getAnswer());
-            }
-        });*/
-
+    public void initAnswerMap() {
         Map<String, Object> answersMap = this.redisGameDataServiceV1.getAllAnswers();
         this.guessServiceV1.setAnswerCacheMap(answersMap);
     }
 
     public RedisGameDataV1 get(String uuid) {
-        GameDataEntityV1 gameData = this.gameDataEntityRepositoryV1.findByUuid(uuid);
-        return new RedisGameDataV1(gameData);
+        return this.redisGameDataServiceV1.getGameData(uuid);
     }
 
     public ImageGameRequestDtoV1 getRequestByHeader(SimpMessageHeaderAccessor messageHeaderAccessor) {
@@ -179,7 +167,6 @@ public class GameServiceV1 {
 
         byte[] decryptedBytes = cipher.doFinal(Base64.getDecoder().decode(encryptedData));
         String result = new String(decryptedBytes, StandardCharsets.UTF_8);
-        ReconnectResponseDtoV1 response = this.objectMapper.readValue(result, ReconnectResponseDtoV1.class);
-        return response;
+        return this.objectMapper.readValue(result, ReconnectResponseDtoV1.class);
     }
 }

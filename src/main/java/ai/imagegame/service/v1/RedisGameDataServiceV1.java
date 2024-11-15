@@ -39,12 +39,20 @@ public class RedisGameDataServiceV1 {
         return (RedisGameDataV1) randomEntry.getValue();
     }
 
-    public void insertAnswerToRedis(String uuid, String answer) {
+    public void insertAnswersToRedis(String uuid, String answer) {
         this.hashOperationsV1.put(RedisKeyV1.ANSWER, uuid, answer);
+    }
+
+    public void insertGameDataToRedis(String uuid, RedisGameDataV1 gameData) {
+        this.hashOperationsV1.put(RedisKeyV1.GAME_DATA, uuid, gameData);
     }
 
     public Map<String, Object> getAllAnswers() {
         return this.hashOperationsV1.entries(RedisKeyV1.ANSWER);
+    }
+
+    public RedisGameDataV1 getGameData(String uuid) {
+       return (RedisGameDataV1) this.hashOperationsV1.get(RedisKeyV1.GAME_DATA, uuid);
     }
 
     public void insertGameDataToRedis(GameDataEntityV1 gameDataEntity) {

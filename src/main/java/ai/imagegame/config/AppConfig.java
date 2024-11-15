@@ -1,23 +1,13 @@
 package ai.imagegame.config;
 
-import ai.imagegame.service.v1.GameServiceV1;
 import jakarta.annotation.Nonnull;
-import jakarta.annotation.PostConstruct;
-import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
-@RequiredArgsConstructor
 public class AppConfig {
-    private final GameServiceV1 gameServiceV1;
-
-    @PostConstruct
-    public void initRedisV1() {
-       this.gameServiceV1.init();
-    }
 
     @Bean
     public WebMvcConfigurer corsConfigurer() {

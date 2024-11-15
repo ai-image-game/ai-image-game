@@ -3,19 +3,14 @@ package ai.imagegame.service.v1;
 import ai.imagegame.dto.v1.GameInfoDtoV1;
 import ai.imagegame.dto.v1.GameStatusInfoDtoV1;
 import ai.imagegame.dto.v1.GuessResultDtoV1;
-import ai.imagegame.repository.v1.GameDataEntityRepositoryV1;
 import lombok.Getter;
 import org.springframework.stereotype.Service;
 
 @Getter
 @Service
 public class GameStatusService1 {
-    private final int maxLevel;
+    private final int MAX_LEVEL = 15;
     private final int MAX_WRONG_LETTERS = 6;
-
-    public GameStatusService1(GameDataEntityRepositoryV1 gameDataEntityRepositoryV1) {
-        this.maxLevel = gameDataEntityRepositoryV1.findMaxLevel();
-    }
 
     public GameStatusInfoDtoV1 getStatus(GameInfoDtoV1 request, GuessResultDtoV1 guessResult) {
         GameStatusInfoDtoV1 status = new GameStatusInfoDtoV1();
@@ -36,7 +31,7 @@ public class GameStatusService1 {
     }
 
     private boolean isClear(int level, int questions) {
-        return level == maxLevel && (questions - 1 == 0);
+        return level == MAX_LEVEL && (questions - 1 == 0);
     }
 
     private boolean isLevelUp(int questions) {
