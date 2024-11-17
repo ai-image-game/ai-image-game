@@ -4,15 +4,9 @@ import ai.imagegame.dto.v1.*;
 import ai.imagegame.repository.v1.RedisGameDataV1;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.stereotype.Service;
 
-import javax.crypto.Cipher;
-import javax.crypto.spec.SecretKeySpec;
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.Base64;
 import java.util.Map;
 
 @Service
@@ -25,8 +19,6 @@ public class GameServiceV1 {
     private final RedisGameDataServiceV1 redisGameDataServiceV1;
     private final GuessServiceV1 guessServiceV1;
     private final ObjectMapper objectMapper;
-    @Value("${secret.key}")
-    private String secretKey;
 
     public void initAnswerMap() {
         Map<String, Object> answersMap = this.redisGameDataServiceV1.getAllAnswers();
@@ -156,17 +148,5 @@ public class GameServiceV1 {
         gameInfo.setQuestions(QUESTIONS);
         gameInfo.setCorrects(0);
         gameInfo.setRetry(MAX_RETRY_COUNT);
-    }
-
-    public ReconnectResponseDtoV1 decryptData(String encryptedData) throws Exception {
-        byte[] decodedKey = Arrays.copyOf(secretKey.getBytes(StandardCharsets.UTF_8), 16); // 16바이트 키 길이 맞추기
-        SecretKeySpec secretKeySpec = new SecretKeySpec(decodedKey, "AES");
-
-        Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
-        cipher.init(Cipher.DECRYPT_MODE, secretKeySpec);
-
-        byte[] decryptedBytes = cipher.doFinal(Base64.getDecoder().decode(encryptedData));
-        String result = new String(decryptedBytes, StandardCharsets.UTF_8);
-        return this.objectMapper.readValue(result, ReconnectResponseDtoV1.class);
     }
 }

@@ -6,12 +6,12 @@ import lombok.NoArgsConstructor;
 import java.util.List;
 
 @Data
-public class ReconnectResponseDtoV1 {
+public class ImageGameInfoForClientDtoV1 {
     private GameInfoDtoV1 gameInfo;
     private ImageInfoDtoV1 imageInfo;
     private QuestionInfoDtoV1 questionInfo;
     private GameStatusInfoDtoV1 statusInfo;
-    private GuessResultDtoV1 guessResult;
+    private GuessResultDtoV1 guessInfo;
     private List<Letters> letters;
     private String[] imgHistory;
 

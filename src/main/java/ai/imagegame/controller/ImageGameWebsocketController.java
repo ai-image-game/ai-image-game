@@ -20,13 +20,13 @@ public class ImageGameWebsocketController {
 
     @MessageMapping("/init")
     @SendToUser("/queue/init")
-    public void init(SimpMessageHeaderAccessor messageHeaderAccessor, @Payload ImageGameRequestDtoV1 request) {
+    public void initV1(SimpMessageHeaderAccessor messageHeaderAccessor, @Payload ImageGameRequestDtoV1 request) {
         this.gameService.addImageGameInfoToHeader(messageHeaderAccessor, request);
     }
 
     @MessageMapping("/next")
     @SendToUser("/queue/next")
-    public ImageGameResponseDtoV1 random(SimpMessageHeaderAccessor messageHeaderAccessor) {
+    public ImageGameResponseDtoV1 randomV1(SimpMessageHeaderAccessor messageHeaderAccessor) {
         ImageGameRequestDtoV1 request = this.gameService.getRequestByHeader(messageHeaderAccessor);
         ImageGameResponseDtoV1 response = this.gameService.getResponse(request);
         this.gameService.addImageGameInfoToHeader(messageHeaderAccessor, response);
