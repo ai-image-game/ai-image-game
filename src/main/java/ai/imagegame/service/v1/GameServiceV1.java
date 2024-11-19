@@ -149,4 +149,14 @@ public class GameServiceV1 {
         gameInfo.setCorrects(0);
         gameInfo.setRetry(MAX_RETRY_COUNT);
     }
+
+    public boolean verify(ImageGameInfoForClientDtoV1 oldData, ImageGameInfoForClientDtoV1 newData) throws Exception {
+        if (oldData == null) {
+            return newData.getGameInfo().getLevel() != 1 || newData.getGameInfo().getCorrects() != 0;
+        } else if (newData.getGameInfo().getLevel() - 1 == oldData.getGameInfo().getLevel()
+                && oldData.getGameInfo().getCorrects() == QUESTIONS - 1) {
+            return true;
+        } else return newData.getGameInfo().getLevel() == oldData.getGameInfo().getLevel()
+                && newData.getGameInfo().getCorrects() == oldData.getGameInfo().getCorrects() + 1;
+    }
 }

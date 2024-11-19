@@ -35,7 +35,12 @@ public class ApiControllerV1 {
     }
 
     @PostMapping("image-game/save")
-    public void saveV1(@RequestBody ImageGameInfoForClientDtoV1 imageGame, HttpServletResponse response) throws Exception {
+    public void saveV1(@CookieValue(value = "savedData", required = false) String savedData, @RequestBody ImageGameInfoForClientDtoV1 imageGame, HttpServletResponse response) throws Exception {
+        if (savedData != null) {
+            ImageGameInfoForClientDtoV1 oldData = encDecService.decrypt(savedData, ImageGameInfoForClientDtoV1.class);
+            //if (!this.gameService.verify(oldData, imageGame)) throw new Exception("Invalid data");
+        }
+
         String encryptedData = this.encDecService.encrypt(imageGame);
 
         Cookie cookie = new Cookie("savedData", encryptedData);
