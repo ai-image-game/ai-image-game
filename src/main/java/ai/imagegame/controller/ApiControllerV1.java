@@ -44,7 +44,7 @@ public class ApiControllerV1 {
         String encryptedData = this.encDecService.encrypt(imageGame);
 
         Cookie cookie = new Cookie("savedData", encryptedData);
-        cookie.setHttpOnly(true);
+        cookie.setHttpOnly(false);
         cookie.setPath("/");
         cookie.setMaxAge(30 * 24 * 60 * 60); //30days
 
