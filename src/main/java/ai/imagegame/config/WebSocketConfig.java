@@ -17,7 +17,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/connect")
-                .setAllowedOrigins("http://192.168.219.100:3000", "https://ai-image-game.com")
+                .setAllowedOrigins("http://192.168.219.100:3000", "https://ai-image-game.com", "http://ai-image-game.com")
                 .withSockJS();
     }
 
