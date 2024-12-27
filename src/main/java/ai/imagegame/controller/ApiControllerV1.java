@@ -1,13 +1,16 @@
 package ai.imagegame.controller;
 
-import ai.imagegame.dto.v1.*;
+import ai.imagegame.dto.v1.ImageGameInfoForClientDtoV1;
+import ai.imagegame.dto.v1.ImageGameRequestDtoV1;
+import ai.imagegame.dto.v1.ImageGameResponseDtoV1;
 import ai.imagegame.service.v1.GameServiceV1;
 import ai.imagegame.service.v1.GameStatusService1;
 import ai.imagegame.service.v1.GuessServiceV1;
+import ai.imagegame.util.CookieUtils;
 import ai.imagegame.util.EncDecService;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -30,8 +33,13 @@ public class ApiControllerV1 {
     }
 
     @GetMapping("image-game/reconnect")
-    public ImageGameInfoForClientDtoV1 reconnectV1(@CookieValue("savedData") String savedData) throws Exception {
-        return this.encDecService.decrypt(savedData, ImageGameInfoForClientDtoV1.class);
+    public ImageGameInfoForClientDtoV1 reconnectV1(@CookieValue("savedData") String savedData, HttpServletResponse response) throws Exception {
+        ImageGameInfoForClientDtoV1 imageGameInfo =  this.encDecService.decrypt(savedData, ImageGameInfoForClientDtoV1.class);
+        if (!StringUtils.hasText(imageGameInfo.getImageInfo().getUuid())) {
+            CookieUtils.removeCookie("savedData", response);
+            return null;
+        }
+        return imageGameInfo;
     }
 
     @PostMapping("image-game/save")
@@ -43,11 +51,6 @@ public class ApiControllerV1 {
 
         String encryptedData = this.encDecService.encrypt(imageGame);
 
-        Cookie cookie = new Cookie("savedData", encryptedData);
-        cookie.setHttpOnly(false);
-        cookie.setPath("/");
-        cookie.setMaxAge(30 * 24 * 60 * 60); //30days
-
-        response.addCookie(cookie);
+        CookieUtils.addCookie("savedData", encryptedData, response);
     }
 }

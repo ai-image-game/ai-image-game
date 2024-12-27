@@ -37,7 +37,7 @@ public class EncDecService {
         return Base64.getEncoder().encodeToString(encryptedBytes);
     }
 
-    public <T> T decrypt(String encryptedData, Class<T> clazz) throws Exception {
+    public <T> T    decrypt(String encryptedData, Class<T> clazz) throws Exception {
         // Cipher 설정
         Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
         cipher.init(Cipher.DECRYPT_MODE, secretKeySpec);
