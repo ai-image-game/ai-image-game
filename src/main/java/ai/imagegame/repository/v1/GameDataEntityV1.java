@@ -20,6 +20,7 @@ public class GameDataEntityV1 {
     private String uuid;
     @Column(nullable = false, length = 300) private String pcImage;
     @Column(nullable = false, length = 300) private String mobileImage;
+    @Column(nullable = false, length = 300) private String snsImage;
     @Column(nullable = false) private int level;
     @Column(length = 30) private String prefix;
     @Column(nullable = false, length = 30) private String answer;

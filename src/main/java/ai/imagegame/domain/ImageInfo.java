@@ -8,4 +8,5 @@ public class ImageInfo {
     private String uuid;
     private String pcImage;
     private String mobileImage;
+    private String snsImage;
 }

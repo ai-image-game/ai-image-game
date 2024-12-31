@@ -21,6 +21,7 @@ public class RedisGameDataV1 implements Serializable {
         this.imageInfo.setUuid(gameDataEntity.getUuid());
         this.imageInfo.setPcImage(gameDataEntity.getPcImage());
         this.imageInfo.setMobileImage(gameDataEntity.getMobileImage());
+        this.imageInfo.setSnsImage(gameDataEntity.getSnsImage());
 
         this.questionInfo.setPrefix(gameDataEntity.getPrefix());
         this.questionInfo.setAnswer(gameDataEntity.getAnswer());
