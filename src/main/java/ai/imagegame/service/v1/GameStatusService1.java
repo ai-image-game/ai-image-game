@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 @Getter
 @Service
 public class GameStatusService1 {
-    private final int MAX_LEVEL = 15;
+    private final int MAX_LEVEL = 10;
     private final int MAX_WRONG_LETTERS = 6;
 
     public GameStatusInfoDtoV1 getStatus(GameInfoDtoV1 request, GuessResultDtoV1 guessResult) {
