@@ -4,8 +4,6 @@ import ai.imagegame.dto.v1.ImageGameInfoForClientDtoV1;
 import ai.imagegame.dto.v1.ImageGameRequestDtoV1;
 import ai.imagegame.dto.v1.ImageGameResponseDtoV1;
 import ai.imagegame.service.v1.GameServiceV1;
-import ai.imagegame.service.v1.GameStatusService1;
-import ai.imagegame.service.v1.GuessServiceV1;
 import ai.imagegame.util.CookieUtils;
 import ai.imagegame.util.EncDecService;
 import jakarta.servlet.http.HttpServletResponse;
@@ -18,8 +16,6 @@ import org.springframework.web.bind.annotation.*;
 @AllArgsConstructor
 public class ApiControllerV1 {
     private final GameServiceV1 gameService;
-    private final GuessServiceV1 guessService;
-    private final GameStatusService1 gameStatusService;
     private final EncDecService encDecService;
 
     @PutMapping("image-game")

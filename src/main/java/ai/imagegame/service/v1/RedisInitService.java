@@ -17,7 +17,7 @@ public class RedisInitService {
         List<GameDataEntityV1> gameDataEntityV1List = gameDataEntityRepositoryV1.findAll();
         gameDataEntityV1List.forEach(gameDataEntity -> {
             if (gameDataEntity.isVisible()) {
-                //redisGameDataServiceV1.insertGameDataToRedis(gameDataEntity);
+                redisGameDataServiceV1.insertGameDataToRedis(gameDataEntity);
                 redisGameDataServiceV1.insertGameDataToRedis(gameDataEntity.getUuid(), new RedisGameDataV1(gameDataEntity));
                 redisGameDataServiceV1.insertAnswersToRedis(gameDataEntity.getUuid(), gameDataEntity.getAnswer());
             }

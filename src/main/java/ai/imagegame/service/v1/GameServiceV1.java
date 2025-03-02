@@ -18,7 +18,6 @@ public class GameServiceV1 {
     public final static int MAX_RETRY_COUNT = 3;
     private final RedisGameDataServiceV1 redisGameDataServiceV1;
     private final GuessServiceV1 guessServiceV1;
-    private final ObjectMapper objectMapper;
 
     public void initAnswerMap() {
         Map<String, Object> answersMap = this.redisGameDataServiceV1.getAllAnswers();
