@@ -2,7 +2,6 @@ package ai.imagegame.service.v1;
 
 import ai.imagegame.repository.v1.GameDataEntityRepositoryV1;
 import ai.imagegame.repository.v1.GameDataEntityV1;
-import ai.imagegame.repository.v1.RedisGameDataV1;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
@@ -17,9 +16,10 @@ public class RedisInitService {
         List<GameDataEntityV1> gameDataEntityV1List = gameDataEntityRepositoryV1.findAll();
         gameDataEntityV1List.forEach(gameDataEntity -> {
             if (gameDataEntity.isVisible()) {
+                /*
                 redisGameDataServiceV1.insertGameDataToRedis(gameDataEntity);
                 redisGameDataServiceV1.insertGameDataToRedis(gameDataEntity.getUuid(), new RedisGameDataV1(gameDataEntity));
-                redisGameDataServiceV1.insertAnswersToRedis(gameDataEntity.getUuid(), gameDataEntity.getAnswer());
+                redisGameDataServiceV1.insertAnswersToRedis(gameDataEntity.getUuid(), gameDataEntity.getAnswer());*/
             }
         });
         gameServiceV1.initAnswerMap();
